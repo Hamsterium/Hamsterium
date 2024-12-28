@@ -1,73 +1,34 @@
-import { randomUUID } from "crypto";
-// pseudocode implementation of this file is located in another gist
-import { createInvoiceInDatabase, createPaymentInDatabase, getInvoiceFromDatabase } from "../database"; 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TON Wallet Connection</title>
+    <link rel="stylesheet" href="material/css/w.css">
+</head>
 
-bot.command("invoice", async (ctx) => {
-  sendInvoice(ctx, ctx.from.id);
-});
+<body>
 
-bot.on("pre_checkout_query", async (ctx) => {
-  onPreCheckout(ctx);
-});
+    <!-- Open Wallet Pop-up Button -->
+    <button id="openModalBtn" class="open-button">Connect TON Wallet</button>
+   
+  
+    <!-- Modal Window -->
+    <div id="walletModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Connect Your TON Wallet</h2>
+            <p>Please connect your Telegram TON wallet to continue.</p>
 
-bot.on("successful_payment", async (ctx) => {
-  onSuccesssfullPayment(ctx)
-});
+            <div class="wallet-options">
+                <button id="connectWallet" class="wallet-btn">Connect Wallet</button>
+                <button id="cancelWallet" class="cancel-btn">Cancel</button>
+            </div>
 
-function onPreCheckout(ctx) {
-  const { id, invoice_payload } = ctx.preCheckoutQuery;
-  // here you can check if this invoice can be fulfilled
-  const invoice = await getInvoiceFromDatabase(invoice_payload); 
-  try {
-    await ctx.telegram.answerPreCheckoutQuery(id, true);
-  } catch (e) {
-    // handle error
-    throw e;
-  }
-}
+            <div id="statusMessage" class="status"></div>
+        </div>
+    </div>
 
-function onSuccesssfullPayment(ctx) {
-  const successful_payment = ctx.update.message.successful_payment;
-  const { total_amount, invoice_payload, telegram_payment_charge_id } =
-    successful_payment;
-
-  const invoice = await getInvoiceFromDatabase(invoice_payload);
- 
-  await createPaymentInDatabase({
-    payment_id: telegram_payment_charge_id,
-    user_id: ctx.from!.id,
-    amount: total_amount,
-    invoice_id: invoice?.id,
-  });
-  await sendMessage(ctx, ctx.from!.id, "Yay, you have paid for the service!");
-}
-
-export async function sendInvoice(
-  telegraf: Context<any>,
-  chatId: number
-) {
-  const amount = 100; // amount of stars you want to charge
-  const product = "Premium-version";
-  const payload = randomUUID();
-  try {
-    await telegraf.telegram.sendInvoice(chatId, {
-      currency: "XTR", 
-      prices: [{ label: product, amount }],
-      title: product,
-      provider_token: "",
-      description: `Fantastic opportunities!`,
-      payload,
-      photo_url:
-        "https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/Original_Doge_meme.jpg/220px-Original_Doge_meme.jpg",
-      photo_width: 500,
-      photo_height: 500,
-      start_parameter: "no_pay",
-    });
-     
-    
-    await createInvoiceInDatabase({ amount, product, payload, user_id: chatId });
-  } catch (e) {
-    // handle error
-    throw e;
-  }
-}
+    <script src="material/js/w.js"></script>
+</body>
+</html>
