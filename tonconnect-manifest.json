@@ -1,0 +1,12 @@
+{
+    "name": "Hamsterium",
+    "description": "Ton Wallet",
+    "url": "https://t.me/Hamsterium",
+    "icons": [
+        {
+            "src": "https://logo/icon.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ]
+}
